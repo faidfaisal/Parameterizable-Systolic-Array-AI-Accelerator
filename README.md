@@ -58,7 +58,7 @@ The design was configured with a `config.json` pointing to the SystemVerilog sou
 {
   "DESIGN_NAME": "top",
   "VERILOG_FILES": ["dir::pe.sv", "dir::systolic_array.sv", "dir::controller.sv", "dir::top.sv"],
-  "CLOCK_PERIOD": 10,
+  "CLOCK_PERIOD": 25,
   "CLOCK_PORT": "clk"
 }
 ```
@@ -296,6 +296,12 @@ A = | 1  2 |    B = | 5  6 |    Expected C = | 19  22 |
 
 Inputs are fed skewed across three cycles per the systolic schedule, then the output is printed via `$display`.
 
+### Waveform
+
+![Simulation Waveform](simulation_waveform.png)
+
+*Vivado behavioral simulation — `rst` deasserts → `clear` pulses → skewed inputs stream in → `c_out` accumulates to final result (0x13=19, 0x16=22, 0x2B=43, 0x32=50)*
+
 **To simulate (e.g. with ModelSim / QuestaSim):**
 ```bash
 vlog pe.sv systolic_array.sv controller.sv top.sv top_tb.sv
@@ -339,8 +345,8 @@ vvp sim
 
 ## Conclusion
 
-This project demonstrates a complete hardware accelerator design cycle from mathematical specification to verified RTL to physical silicon. The systolic array architecture delivers high multiply-accumulate throughput with a minimal, regular structure that scales cleanly with the parameter N, making it a strong foundation for matrix-heavy workloads like neural network inference and signal processing.
+This project demonstrates a complete hardware accelerator design cycle from mathematical specification to verified RTL to physical silicon. The systolic array architecture delivers high multiply-accumulate throughput with a minimal, regular structure that scales cleanly with the parameter `N`, making it a strong foundation for matrix-heavy workloads like neural network inference and signal processing.
 
-The design was fully verified through unit, integration, and system-level testbenches, then taken through the complete RTL-to-GDSII flow using LibreLane and the open-source sky130 PDK, resulting in a real taped-out ASIC. The fully registered, single-clock-domain datapath made timing closure straightforward, and the parametrized generate-based architecture means the same RTL scales from a 2×2 proof-of-concept to larger arrays without any structural changes.
+The design was fully verified through unit, integration, and system-level testbenches, then taken through the complete RTL-to-GDSII flow using LibreLane and the open-source sky130 PDK, resulting in a real taped-out ASIC. The fully registered, single-clock-domain datapath made timing closure straightforward, and the parametrized `generate`-based architecture means the same RTL scales from a 2×2 proof-of-concept to larger arrays without any structural changes.
 
 ---
