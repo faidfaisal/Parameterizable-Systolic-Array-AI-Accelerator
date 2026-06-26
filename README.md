@@ -105,7 +105,7 @@ The fully registered datapath (all PE outputs are flip-flop driven) produces cle
 
 Matrix multiplication is one of the most computationally intensive operations in modern workloads — it is the backbone of neural network inference, signal processing, and scientific computing. General-purpose CPUs are inefficient at this because they process data serially; GPUs help but come with significant power and area overhead.
 
-A **systolic array** solves this by distributing computation across a grid of simple Processing Elements (PEs) that pass data rhythmically from one to the next in lockstep with the clock — like a heartbeat (hence "systolic"). Data flows through the array without any centralized control, achieving high throughput with minimal memory bandwidth.
+A **systolic array** solves this by distributing computation across a grid of simple Processing Elements (PEs) that pass data rhythmically from one to the next in lockstep with the clock like a heartbeat (hence "systolic"). Data flows through the array without any centralized control, achieving high throughput with minimal memory bandwidth.
 
 This project implements a fully parametrized N×N systolic array in SystemVerilog, capable of computing the product of two N×N signed integer matrices in `3N - 2` clock cycles. It was also synthesized and taped out as a custom ASIC.
 
