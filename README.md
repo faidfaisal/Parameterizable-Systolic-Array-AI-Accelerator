@@ -378,9 +378,4 @@ The design was fully verified through unit, integration, and system-level testbe
 
 ---
 
-## Author
-**Faid Faisal** — [faidfaisal1@gmail.com](mailto:faidfaisal1@gmail.com)
-
----
-
 *SystemVerilog implementation Parametrized 2D Systolic Array Matrix Multiplication Accelerator*
