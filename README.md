@@ -1,6 +1,8 @@
 # Parametrized 2D Systolic Array Matrix Multiplication Accelerator
 
-A fully parametrized N×N systolic array hardware accelerator implemented in SystemVerilog, designed for high-throughput matrix multiplication. Taped out as a custom ASIC.
+A fully parametrized N×N systolic array hardware accelerator implemented in SystemVerilog, designed for high-throughput matrix multiplication. Taped out as a custom ASIC on the SkyWater 130nm open-source PDK using LibreLane.
+
+**Author:** Faid Faisal | Computer Engineering, Stony Brook University
 
 ---
 
@@ -28,7 +30,7 @@ This design was synthesized and taped out as a custom ASIC using the open-source
 <!-- Drop your GDS screenshot or die photo here — replace the path below -->
 ![ASIC Layout](custom_ASIC.png)
 
-*GDS layout of the systolic array — generated via LibreLane + KLayout*
+*GDS layout of the systolic array generated via LibreLane + KLayout*
 
 ### Flow
 
@@ -48,7 +50,7 @@ The full RTL-to-GDSII flow followed the standard ASIC design stages as implement
 
 ### What is LibreLane?
 
-[LibreLane](https://librelane.readthedocs.io/en/stable/getting_started/newcomers/index.html) is an open-source infrastructure library for constructing digital ASIC physical implementation flows. It includes a reference flow (`Classic`) built entirely on open-source EDA tools — Yosys, OpenROAD, Magic, KLayout, and Netgen — all driven from a single `config.json` file. It is the successor to OpenLane and is developed under the FOSSi Foundation.
+[LibreLane](https://librelane.readthedocs.io/en/stable/getting_started/newcomers/index.html) is an open-source infrastructure library for constructing digital ASIC physical implementation flows. It includes a reference flow (`Classic`) built entirely on open-source EDA tools Yosys, OpenROAD, Magic, KLayout, and Netgen all driven from a single `config.json` file. It is the successor to OpenLane and is developed under the FOSSi Foundation.
 
 ### Configuration
 
@@ -67,15 +69,15 @@ The design was configured with a `config.json` pointing to the SystemVerilog sou
 
 - **Technology node:** sky130 (SkyWater 130nm open-source PDK)
 - **Clock domain:** Single synchronous domain, fully synchronous reset
-- **Critical path:** Through the PE multiply-accumulate chain — `ACC_WIDTH` and `DATA_WIDTH` directly determine depth
-- **Area scaling:** O(N²) — each added row/column instantiates N new PEs
+- **Critical path:** Through the PE multiply-accumulate chain `ACC_WIDTH` and `DATA_WIDTH` directly determine depth
+- **Area scaling:** O(N²) each added row/column instantiates N new PEs
 - **Back-to-back throughput:** The `clear` signal resets accumulators without a full chip reset, enabling pipelined computation
 
 The fully registered datapath (all PE outputs are flip-flop driven) produces clean timing paths and makes timing closure straightforward with standard-cell synthesis.
 
 ### Power, Performance, and Area (PPA)
 
-> Metrics from LibreLane `final/metrics.csv` — sky130 PDK, nom_tt_025C_1v80 corner
+> Metrics from LibreLane `final/metrics.csv` sky130 PDK, nom_tt_025C_1v80 corner
 
 | Metric | Value |
 |---|---|
@@ -90,20 +92,20 @@ The fully registered datapath (all PE outputs are flip-flop driven) produces cle
 | Internal Power | 5.34 mW |
 | Switching Power | 4.47 mW |
 | Leakage Power | 0.056 µW |
-| Setup Worst Slack (tt corner) | +2.045 ns  |
-| Hold Worst Slack (tt corner) | +0.339 ns  |
-| Setup Violations (tt corner) | 0 |
-| Hold Violations (tt corner) | 0 |
-| DRC Errors | 0  |
-| LVS Errors | 0 |
+| Setup Worst Slack (tt corner) | +2.045 ns ✅ |
+| Hold Worst Slack (tt corner) | +0.339 ns ✅ |
+| Setup Violations (tt corner) | 0 ✅ |
+| Hold Violations (tt corner) | 0 ✅ |
+| DRC Errors | 0 ✅ |
+| LVS Errors | 0 ✅ |
 | Routed Wirelength | 57,363 units |
-| Routing DRC Errors (final) | 0 |
+| Routing DRC Errors (final) | 0 ✅ |
 
 ---
 
 ## Overview
 
-Matrix multiplication is one of the most computationally intensive operations in modern workloads — it is the backbone of neural network inference, signal processing, and scientific computing. General-purpose CPUs are inefficient at this because they process data serially; GPUs help but come with significant power and area overhead.
+Matrix multiplication is one of the most computationally intensive operations in modern workloads it is the backbone of neural network inference, signal processing, and scientific computing. General-purpose CPUs are inefficient at this because they process data serially; GPUs help but come with significant power and area overhead.
 
 A **systolic array** solves this by distributing computation across a grid of simple Processing Elements (PEs) that pass data rhythmically from one to the next in lockstep with the clock like a heartbeat (hence "systolic"). Data flows through the array without any centralized control, achieving high throughput with minimal memory bandwidth.
 
@@ -121,7 +123,7 @@ $$C[i][j] = \sum_{k=0}^{N-1} A[i][k] \cdot B[k][j]$$
 
 Each output element C[i][j] is the dot product of row *i* of **A** with column *j* of **B**.
 
-**Example — 2×2 case:**
+**Example 2×2 case:**
 
 ```
 A = | 1  2 |      B = | 5  6 |
@@ -153,7 +155,7 @@ The key insight is **data reuse through pipelining**:
 - Column *j* of matrix **B** is fed into the top edge of column *j* of the array.
 - Each PE multiplies its current `a_in` and `b_in`, adds it to its accumulator, then **passes both values to its right and bottom neighbors** on the next clock cycle.
 
-Because data propagates one PE per cycle, inputs must be **skewed** — staggered in time — so that the right elements meet at the right PE at the right cycle.
+Because data propagates one PE per cycle, inputs must be **skewed** staggered in time so that the right elements meet at the right PE at the right cycle.
 
 ### Data Flow Diagram (2×2 example)
 
@@ -326,7 +328,7 @@ Inputs are fed skewed across three cycles per the systolic schedule, then the ou
 
 ![Simulation Waveform](simulation_waveform.png)
 
-*Vivado behavioral simulation — `rst` deasserts → `clear` pulses → skewed inputs stream in → `c_out` accumulates to final result (0x13=19, 0x16=22, 0x2B=43, 0x32=50)*
+*Vivado behavioral simulation `rst` deasserts → `clear` pulses → skewed inputs stream in → `c_out` accumulates to final result (0x13=19, 0x16=22, 0x2B=43, 0x32=50)*
 
 **To simulate (e.g. with ModelSim / QuestaSim):**
 ```bash
@@ -346,26 +348,26 @@ vvp sim
 
 ```
 .
-├── pe.sv                   # Processing Element — MAC unit
-├── systolic_array.sv       # N×N PE grid (parametrized)
-├── controller.sv           # FSM controller (IDLE/CLEAR/COMPUTE/DONE)
-├── top.sv                  # Top-level wrapper
-├── pe_tb.sv                # PE unit testbench
-├── systolic_arary_tb.sv    # Array integration testbench
-├── top_tb.sv               # Full system testbench
-├── custom_ASIC.png         # GDS layout image
-└── config.json             # LibreLane flow configuration
-
+├── pe.sv                       # Processing Element MAC unit
+├── systolic_array.sv           # N×N PE grid (parametrized)
+├── controller.sv               # FSM controller (IDLE/CLEAR/COMPUTE/DONE)
+├── top.sv                      # Top-level wrapper
+├── pe_tb.sv                    # PE unit testbench
+├── systolic_arary_tb.sv        # Array integration testbench
+├── top_tb.sv                   # Full system testbench
+├── custom_ASIC.png             # GDS layout image
+├── simulation_waveform.png     # Vivado behavioral simulation waveform
+└── config.json                 # LibreLane flow configuration
 ```
 
 ---
 
 ## Known Limitations & Future Work
 
-- **Input skewing is manual** — the testbenches drive pre-skewed inputs by hand. A real system would include an input skew buffer or DMA controller to handle this automatically.
-- **Square matrices only** — the current design assumes N×N operands. Rectangular matrix support (M×K × K×N) would require separate row/column dimension parameters.
-- **No output buffering** — `c_out` is read directly from PE accumulators. A production design would latch results into an output register bank after `done` asserts.
-- **Fixed datapath width** — `DATA_WIDTH` and `ACC_WIDTH` are set at elaboration time. Runtime-reconfigurable precision (e.g. INT4/INT8 switching) is a natural extension for ML inference workloads.
+- **Input skewing is manual** the testbenches drive pre-skewed inputs by hand. A real system would include an input skew buffer or DMA controller to handle this automatically.
+- **Square matrices only** the current design assumes N×N operands. Rectangular matrix support (M×K × K×N) would require separate row/column dimension parameters.
+- **No output buffering** `c_out` is read directly from PE accumulators. A production design would latch results into an output register bank after `done` asserts.
+- **Fixed datapath width** `DATA_WIDTH` and `ACC_WIDTH` are set at elaboration time. Runtime-reconfigurable precision (e.g. INT4/INT8 switching) is a natural extension for ML inference workloads.
 
 ---
 
@@ -375,4 +377,6 @@ This project demonstrates a complete hardware accelerator design cycle from math
 
 The design was fully verified through unit, integration, and system-level testbenches, then taken through the complete RTL-to-GDSII flow using LibreLane and the open-source sky130 PDK, resulting in a real taped-out ASIC. The fully registered, single-clock-domain datapath made timing closure straightforward, and the parametrized `generate`-based architecture means the same RTL scales from a 2×2 proof-of-concept to larger arrays without any structural changes.
 
+---
 
+*SystemVerilog implementation Parametrized 2D Systolic Array Matrix Multiplication Accelerator*
