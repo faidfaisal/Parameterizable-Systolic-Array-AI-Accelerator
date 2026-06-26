@@ -73,6 +73,32 @@ The design was configured with a `config.json` pointing to the SystemVerilog sou
 
 The fully registered datapath (all PE outputs are flip-flop driven) produces clean timing paths and makes timing closure straightforward with standard-cell synthesis.
 
+### Power, Performance, and Area (PPA)
+
+> Metrics from LibreLane `final/metrics.csv` — sky130 PDK, nom_tt_025C_1v80 corner
+
+| Metric | Value |
+|---|---|
+| Technology | Sky130 (SkyWater 130nm) |
+| Die Area | 235.84 × 246.56 µm (~58,148 µm²) |
+| Core Area | 50,068 µm² |
+| Cell-Area Utilization | 66.9% |
+| Standard Cell Count | 3,670 |
+| Sequential Cells (Flip-Flops) | 160 |
+| Total Instance Count | 8,798 |
+| Total Power | 9.82 mW |
+| Internal Power | 5.34 mW |
+| Switching Power | 4.47 mW |
+| Leakage Power | 0.056 µW |
+| Setup Worst Slack (tt corner) | +2.045 ns  |
+| Hold Worst Slack (tt corner) | +0.339 ns  |
+| Setup Violations (tt corner) | 0 |
+| Hold Violations (tt corner) | 0 |
+| DRC Errors | 0  |
+| LVS Errors | 0 |
+| Routed Wirelength | 57,363 units |
+| Routing DRC Errors (final) | 0 |
+
 ---
 
 ## Overview
@@ -298,7 +324,7 @@ Inputs are fed skewed across three cycles per the systolic schedule, then the ou
 
 ### Waveform
 
-![Simulation Waveform](simulation_waveform.png)
+![Simulation Waveform](simulation.png)
 
 *Vivado behavioral simulation — `rst` deasserts → `clear` pulses → skewed inputs stream in → `c_out` accumulates to final result (0x13=19, 0x16=22, 0x2B=43, 0x32=50)*
 
@@ -350,3 +376,5 @@ This project demonstrates a complete hardware accelerator design cycle from math
 The design was fully verified through unit, integration, and system-level testbenches, then taken through the complete RTL-to-GDSII flow using LibreLane and the open-source sky130 PDK, resulting in a real taped-out ASIC. The fully registered, single-clock-domain datapath made timing closure straightforward, and the parametrized `generate`-based architecture means the same RTL scales from a 2×2 proof-of-concept to larger arrays without any structural changes.
 
 ---
+
+*SystemVerilog implementation — Parametrized 2D Systolic Array Matrix Multiplication Accelerator*
