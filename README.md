@@ -6,6 +6,7 @@ A fully parametrized N×N systolic array hardware accelerator implemented in Sys
 
 ## Table of Contents
 
+- [ASIC Implementation](#asic-implementation)
 - [Overview](#overview)
 - [The Math](#the-math)
 - [How a Systolic Array Works](#how-a-systolic-array-works)
@@ -15,7 +16,62 @@ A fully parametrized N×N systolic array hardware accelerator implemented in Sys
 - [Timing & Latency](#timing--latency)
 - [Simulation & Testing](#simulation--testing)
 - [File Structure](#file-structure)
-- [ASIC Implementation](#asic-implementation)
+
+---
+
+## ASIC Implementation
+
+This design was synthesized and taped out as a custom ASIC using the open-source **[LibreLane](https://librelane.readthedocs.io/en/stable/getting_started/newcomers/index.html)** ASIC implementation flow.
+
+### Layout
+
+<!-- Drop your GDS screenshot or die photo here — replace the path below -->
+![ASIC Layout](custom_ASIC.png)
+
+*GDS layout of the systolic array — generated via LibreLane + KLayout*
+
+### Flow
+
+The full RTL-to-GDSII flow followed the standard ASIC design stages as implemented by LibreLane:
+
+| Stage | Tool (via LibreLane) | Description |
+|---|---|---|
+| Synthesis | Yosys | RTL → gate-level netlist |
+| Floorplan | OpenROAD | Die area, pin placement |
+| Placement | OpenROAD | Standard cell placement |
+| CTS | OpenROAD | Clock tree synthesis |
+| Routing | OpenROAD | Global + detailed routing |
+| DRC | Magic + KLayout | Design rule checking |
+| LVS | Netgen | Layout vs. schematic |
+| STA | OpenROAD | Static timing analysis |
+| GDSII Export | KLayout | Final layout output |
+
+### What is LibreLane?
+
+[LibreLane](https://librelane.readthedocs.io/en/stable/getting_started/newcomers/index.html) is an open-source infrastructure library for constructing digital ASIC physical implementation flows. It includes a reference flow (`Classic`) built entirely on open-source EDA tools — Yosys, OpenROAD, Magic, KLayout, and Netgen — all driven from a single `config.json` file. It is the successor to OpenLane and is developed under the FOSSi Foundation.
+
+### Configuration
+
+The design was configured with a `config.json` pointing to the SystemVerilog sources, specifying the top module, clock port, and clock period:
+
+```json
+{
+  "DESIGN_NAME": "top",
+  "VERILOG_FILES": ["dir::pe.sv", "dir::systolic_array.sv", "dir::controller.sv", "dir::top.sv"],
+  "CLOCK_PERIOD": 10,
+  "CLOCK_PORT": "clk"
+}
+```
+
+### Implementation Highlights
+
+- **Technology node:** sky130 (SkyWater 130nm open-source PDK)
+- **Clock domain:** Single synchronous domain, fully synchronous reset
+- **Critical path:** Through the PE multiply-accumulate chain — `ACC_WIDTH` and `DATA_WIDTH` directly determine depth
+- **Area scaling:** O(N²) — each added row/column instantiates N new PEs
+- **Back-to-back throughput:** The `clear` signal resets accumulators without a full chip reset, enabling pipelined computation
+
+The fully registered datapath (all PE outputs are flip-flop driven) produces clean timing paths and makes timing closure straightforward with standard-cell synthesis.
 
 ---
 
@@ -266,63 +322,5 @@ vvp sim
 ├── systolic_arary_tb.sv    # Array integration testbench
 └── top_tb.sv               # Full system testbench
 ```
-
----
-
-## ASIC Implementation
-
-This design was synthesized and taped out as a custom ASIC using the open-source **[LibreLane](https://librelane.readthedocs.io/en/stable/getting_started/newcomers/index.html)** ASIC implementation flow.
-
-### Layout
-
-<!-- Replace the line below with your actual GDS screenshot or die photo -->
-![ASIC Layout](custom_ASIC.png)
-
-*GDS layout of the systolic array — generated via LibreLane + KLayout*
-
-### Flow
-
-The full RTL-to-GDSII flow followed the standard ASIC design stages as implemented by LibreLane:
-
-| Stage | Tool (via LibreLane) | Description |
-|---|---|---|
-| Synthesis | Yosys | RTL → gate-level netlist |
-| Floorplan | OpenROAD | Die area, pin placement |
-| Placement | OpenROAD | Standard cell placement |
-| CTS | OpenROAD | Clock tree synthesis |
-| Routing | OpenROAD | Global + detailed routing |
-| DRC | Magic + KLayout | Design rule checking |
-| LVS | Netgen | Layout vs. schematic |
-| STA | OpenROAD | Static timing analysis |
-| GDSII Export | KLayout | Final layout output |
-
-### What is LibreLane?
-
-[LibreLane](https://librelane.readthedocs.io/en/stable/getting_started/newcomers/index.html) is an open-source infrastructure library for constructing digital ASIC physical implementation flows. It includes a reference flow (`Classic`) built entirely on open-source EDA tools — Yosys, OpenROAD, Magic, KLayout, and Netgen — all driven from a single `config.json` file. It is the successor to OpenLane and is developed under the FOSSi Foundation.
-
-### Configuration
-
-The design was configured with a `config.json` pointing to the SystemVerilog sources, specifying the top module, clock port, and clock period:
-
-```json
-{
-  "DESIGN_NAME": "top",
-  "VERILOG_FILES": ["dir::pe.sv", "dir::systolic_array.sv", "dir::controller.sv", "dir::top.sv"],
-  "CLOCK_PERIOD": 10,
-  "CLOCK_PORT": "clk"
-}
-```
-
-### Implementation Highlights
-
-- **Technology node:** sky130 (SkyWater 130nm open-source PDK)
-- **Clock domain:** Single synchronous domain, fully synchronous reset
-- **Critical path:** Through the PE multiply-accumulate chain — `ACC_WIDTH` and `DATA_WIDTH` directly determine depth
-- **Area scaling:** O(N²) — each added row/column instantiates N new PEs
-- **Back-to-back throughput:** The `clear` signal resets accumulators without a full chip reset, enabling pipelined computation
-
-The fully registered datapath (all PE outputs are flip-flop driven) produces clean timing paths and makes timing closure straightforward with standard-cell synthesis.
-
----
 
 *SystemVerilog implementation — Parametrized 2D Systolic Array Matrix Accelerator*
