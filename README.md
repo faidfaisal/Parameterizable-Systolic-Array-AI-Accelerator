@@ -2,7 +2,6 @@
 
 A fully parametrized N×N systolic array hardware accelerator implemented in SystemVerilog, designed for high-throughput matrix multiplication. Taped out as a custom ASIC on the SkyWater 130nm open-source PDK using LibreLane.
 
-**Author:** Faid Faisal | Computer Engineering, Stony Brook University
 
 ---
 
@@ -376,6 +375,9 @@ vvp sim
 This project demonstrates a complete hardware accelerator design cycle from mathematical specification to verified RTL to physical silicon. The systolic array architecture delivers high multiply-accumulate throughput with a minimal, regular structure that scales cleanly with the parameter `N`, making it a strong foundation for matrix-heavy workloads like neural network inference and signal processing.
 
 The design was fully verified through unit, integration, and system-level testbenches, then taken through the complete RTL-to-GDSII flow using LibreLane and the open-source sky130 PDK, resulting in a real taped-out ASIC. The fully registered, single-clock-domain datapath made timing closure straightforward, and the parametrized `generate`-based architecture means the same RTL scales from a 2×2 proof-of-concept to larger arrays without any structural changes.
+
+---
+**Author:** Faid Faisal | Computer Engineering, Stony Brook University
 
 ---
 
