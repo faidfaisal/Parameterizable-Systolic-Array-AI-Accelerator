@@ -376,6 +376,3 @@ This project demonstrates a complete hardware accelerator design cycle from math
 
 The design was fully verified through unit, integration, and system-level testbenches, then taken through the complete RTL-to-GDSII flow using LibreLane and the open-source sky130 PDK, resulting in a real taped-out ASIC. The fully registered, single-clock-domain datapath made timing closure straightforward, and the parametrized `generate`-based architecture means the same RTL scales from a 2×2 proof-of-concept to larger arrays without any structural changes.
 
----
-
-*SystemVerilog implementation Parametrized 2D Systolic Array Matrix Multiplication Accelerator*
