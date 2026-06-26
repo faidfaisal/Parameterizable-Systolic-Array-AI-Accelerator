@@ -324,7 +324,7 @@ Inputs are fed skewed across three cycles per the systolic schedule, then the ou
 
 ### Waveform
 
-![Simulation Waveform](simulation.png)
+![Simulation Waveform](simulation_waveform.png)
 
 *Vivado behavioral simulation — `rst` deasserts → `clear` pulses → skewed inputs stream in → `c_out` accumulates to final result (0x13=19, 0x16=22, 0x2B=43, 0x32=50)*
 
