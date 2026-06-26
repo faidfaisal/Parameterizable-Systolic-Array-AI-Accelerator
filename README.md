@@ -92,14 +92,14 @@ The fully registered datapath (all PE outputs are flip-flop driven) produces cle
 | Internal Power | 5.34 mW |
 | Switching Power | 4.47 mW |
 | Leakage Power | 0.056 µW |
-| Setup Worst Slack (tt corner) | +2.045 ns ✅ |
-| Hold Worst Slack (tt corner) | +0.339 ns ✅ |
-| Setup Violations (tt corner) | 0 ✅ |
-| Hold Violations (tt corner) | 0 ✅ |
-| DRC Errors | 0 ✅ |
-| LVS Errors | 0 ✅ |
+| Setup Worst Slack (tt corner) | +2.045 ns  |
+| Hold Worst Slack (tt corner) | +0.339 ns  |
+| Setup Violations (tt corner) | 0  |
+| Hold Violations (tt corner) | 0  |
+| DRC Errors | 0  |
+| LVS Errors | 0  |
 | Routed Wirelength | 57,363 units |
-| Routing DRC Errors (final) | 0 ✅ |
+| Routing DRC Errors (final) | 0  |
 
 ---
 
