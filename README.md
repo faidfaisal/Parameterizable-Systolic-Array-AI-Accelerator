@@ -26,7 +26,7 @@ This design was synthesized and taped out as a custom ASIC using the open-source
 
 ### Layout
 
-<img src="images/custom_ASIC.png" width="600">
+<img src="images/custom_ASIC.png" width="800">
 
 *GDS layout of the systolic array generated via LibreLane + KLayout*
 
@@ -323,8 +323,7 @@ A = | 1  2 |    B = | 5  6 |    Expected C = | 19  22 |
 Inputs are fed skewed across three cycles per the systolic schedule, then the output is printed via `$display`.
 
 ### Waveform
-
-![Simulation Waveform](simulation_waveform.png)
+<img src="images/simulation_waveform.png" width="800">
 
 *Vivado behavioral simulation `rst` deasserts → `clear` pulses → skewed inputs stream in → `c_out` accumulates to final result (0x13=19, 0x16=22, 0x2B=43, 0x32=50)*
 
