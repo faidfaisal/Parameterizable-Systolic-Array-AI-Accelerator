@@ -26,8 +26,7 @@ This design was synthesized and taped out as a custom ASIC using the open-source
 
 ### Layout
 
-<!-- Drop your GDS screenshot or die photo here — replace the path below -->
-![ASIC Layout](custom_ASIC.png)
+<img src="images/custom_ASIC.png" width="600">
 
 *GDS layout of the systolic array generated via LibreLane + KLayout*
 
